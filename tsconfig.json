@@ -1,9 +1,12 @@
 {
-    "files": [
-        "src/*"
+    "include": [
+        "src/**/*.ts"
     ],
     "compilerOptions": {
         "noImplicitAny": true,
-        "target": "es5"
+        "target": "es5",
+        "lib": ["dom", "es5", "es2015", "es2015.promise", "es2017"],
+        "outDir": "dist",
+        "declaration": true
     }
 }

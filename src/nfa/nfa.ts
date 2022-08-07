@@ -22,7 +22,12 @@ export default class NFA {
     }
 
     accepted(): boolean {
-        return this.current.find(s => s.isTerminal()) != undefined
+        for (let i in this.current) {
+            if (this.current[i]) {
+                return true
+            }
+        }
+        return false
     }
 
     reset() {
@@ -30,11 +35,31 @@ export default class NFA {
     }
 
     connect(other: NFA) {
-        this.terminals.forEach(t => {
-            t.setTerminal(false)
-            t.addClosure(other.start)
-        })
-        this.terminals = other.terminals
+        if (other.start.inputCount() > 0) {
+            this.terminals.forEach(t => {
+                t.setTerminal(false)
+                t.addClosure(other.start)
+            })
+            this.terminals = other.terminals
+        } else {
+            this.terminals.forEach(t => {
+                t.setTerminal(other.start.isTerminal())
+                other.start.forEachPath(p => t.movePath(p))
+            })
+            
+            if (other.start.isTerminal()) {
+                let terminals: State[] = []
+                other.terminals.forEach(t => {
+                    if (t.id != other.start.id) {
+                        terminals.push(t)
+                    }
+                })
+                this.terminals.forEach(t => terminals.push(t))
+                this.terminals = terminals
+            } else {
+                this.terminals = other.terminals
+            }
+        }
     }
 
     or(other: NFA) {
@@ -68,6 +93,14 @@ export default class NFA {
                 t.addClosure(this.start)
             }
         })
+    }
+
+    toString(): string {
+        const data = {
+            start: this.start.toString(),
+            terminals: this.terminals.map(t => t.toString())
+        }
+        return JSON.stringify(data, null, 2)
     }
 
 }

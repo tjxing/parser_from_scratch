@@ -38,13 +38,17 @@ export class Builder implements IBuilder {
                     nfa.connect(lastNFA)
                 }
                 const state = this.gen.newState()
+                state.setTerminal(false)
                 const next = this.gen.newState()
                 const path = new Path(c.charCodeAt(0), next)
                 state.addPath(path)
-                lastNFA = new NFA(state, [state])
+                lastNFA = new NFA(state, [next])
             }
 
             c = this.s.nextChar()
+        }
+        if (lastNFA) {
+            nfa.connect(lastNFA)
         }
 
         return nfa
