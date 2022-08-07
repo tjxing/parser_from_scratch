@@ -55,10 +55,3 @@ gulp.task('build-only', gulp.series(
     gulp.parallel('build'),
     gulp.parallel('types'))
 )
-
-gulp.task('unittest', () => gulp.src(['test/*.ts'], { read: false })
-    .pipe(mocha({
-        reporter: 'spec',
-        require: ['ts-node/register']
-    }))
-)
