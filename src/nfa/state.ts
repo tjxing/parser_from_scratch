@@ -5,14 +5,14 @@ export default class State {
     private paths: Path[]
     private closures: State[]
     private terminal: boolean;
-    private input: Path[]
+    private input: number
 
     constructor(id: number) {
         this.id = id
         this.paths = []
         this.closures = []
         this.terminal = true
-        this.input = []
+        this.input = 0
     }
 
     consume(c: number): State[] {
@@ -53,7 +53,7 @@ export default class State {
 
     addPath(path: Path) {
         this.paths.push(path)
-        path.dest.input.push(path)
+        ++path.dest.input
     }
 
     movePath(path: Path) {
@@ -66,6 +66,11 @@ export default class State {
 
     addClosure(s: State) {
         this.closures[s.id] = s
+        ++s.input
+    }
+
+    moveClosure(s: State) {
+        this.closures[s.id] = s
     }
 
     forEachClosure(func: (s: State) => void) {
@@ -73,16 +78,6 @@ export default class State {
     }
 
     inputCount(): number {
-        return this.input.length
-    }
-
-    toString(): string {
-        let data = {
-            id: this.id,
-            paths: this.paths.map(p => p.toString()),
-            closures: this.closures.map(s => s.id),
-            terminal: this.terminal
-        }
-        return JSON.stringify(data, null, 2)
+        return this.input
     }
 }

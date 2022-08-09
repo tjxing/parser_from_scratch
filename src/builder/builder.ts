@@ -1,17 +1,25 @@
-import StringBuffer from "./stringBuffer";
-import { NFA, State, Path, StateGenerator } from "../nfa";
+import StringBuffer from "./stringBuffer"
+import { NFA, Path, StateGenerator } from "../nfa"
 
 export interface IBuilder {
     build(): NFA
 }
 
 export class Builder implements IBuilder {
-    private s: StringBuffer
-    private gen: StateGenerator
+    protected s: StringBuffer
+    protected gen: StateGenerator
+    protected stopCond: (c: string) => boolean
+    protected finishFunc: (last: NFA | undefined, result: NFA) => void
 
     constructor(s: string) {
         this.s = new StringBuffer(s)
         this.gen = new StateGenerator()
+        this.stopCond = (c: string) => c != undefined
+        this.finishFunc = (last: NFA | undefined, result: NFA) => {
+            if (last) {
+                result.connect(last)
+            }
+        }
     }
 
     build(): NFA {
@@ -20,9 +28,25 @@ export class Builder implements IBuilder {
 
         let lastNFA: NFA | undefined = undefined
         let c = this.s.nextChar()
-        while(c != undefined) {
+        while(this.stopCond(c)) {
             if (c == '(') {
-
+                if (lastNFA) {
+                    nfa.connect(lastNFA)
+                }
+                const paranBuilder = new Builder('')
+                paranBuilder.s = this.s
+                paranBuilder.gen = this.gen
+                paranBuilder.stopCond = (c: string) => c != ')'
+                paranBuilder.finishFunc = (last: NFA | undefined, result: NFA) => {
+                    if (c) {
+                        if (last) {
+                            result.connect(last)
+                        }
+                    } else {
+                        throw new Error('Missing ) in regex')
+                    }
+                }
+                lastNFA = paranBuilder.build()
             } else if (c == '[') {
 
             } else if (c == '*') {
@@ -47,9 +71,7 @@ export class Builder implements IBuilder {
 
             c = this.s.nextChar()
         }
-        if (lastNFA) {
-            nfa.connect(lastNFA)
-        }
+        this.finishFunc(lastNFA, nfa)
 
         return nfa
     }

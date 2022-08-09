@@ -23,7 +23,7 @@ export default class NFA {
 
     accepted(): boolean {
         for (let i in this.current) {
-            if (this.current[i]) {
+            if (this.current[i].isTerminal()) {
                 return true
             }
         }
@@ -45,6 +45,7 @@ export default class NFA {
             this.terminals.forEach(t => {
                 t.setTerminal(other.start.isTerminal())
                 other.start.forEachPath(p => t.movePath(p))
+                other.start.forEachClosure(c => t.moveClosure(t))
             })
             
             if (other.start.isTerminal()) {
@@ -93,14 +94,6 @@ export default class NFA {
                 t.addClosure(this.start)
             }
         })
-    }
-
-    toString(): string {
-        const data = {
-            start: this.start.toString(),
-            terminals: this.terminals.map(t => t.toString())
-        }
-        return JSON.stringify(data, null, 2)
     }
 
 }

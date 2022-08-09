@@ -15,12 +15,4 @@ export default class Path {
         }
         return undefined
     }
-
-    toString(): string {
-        const data = {
-            char: this.char,
-            dest: this.dest.id
-        }
-        return JSON.stringify(data, null, 2)
-    }
 }
