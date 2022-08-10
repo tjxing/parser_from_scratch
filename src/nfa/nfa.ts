@@ -2,7 +2,7 @@ import State from './state'
 import StateGenerator from './stateGenerator'
 
 export default class NFA {
-    private start: State
+    readonly start: State
     private terminals: State[]
     private current: State[]
 

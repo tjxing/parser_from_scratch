@@ -1,7 +1,7 @@
 import State from './state'
 
 export default class Path {
-    private char: number
+    readonly char: number
     readonly dest: State
 
     constructor(char: number, dest: State) {
