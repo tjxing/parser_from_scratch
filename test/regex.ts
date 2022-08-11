@@ -32,6 +32,36 @@ describe('Regex', function () {
     equal('abcbcbc', regex?.match('abcbcbcd'))
   })
 
+  it('escape test 1', function () {
+    const regex = createRegex('\\b\\f\\n\\r\\t\\v')
+    equal('\b\f\n\r\t\v', regex?.match('\b\f\n\r\t\v'))
+    equal('\b\f\n\r\t\v', regex?.match('\b\f\n\r\t\vabc'))
+  })
+
+  it('escape test 2', function () {
+    const regex = createRegex('a(\\b\\f)+\\n\\r*\\t\\v')
+    equal('a\b\f\b\f\b\f\n\t\v', regex?.match('a\b\f\b\f\b\f\n\t\v'))
+  })
+
+  it('escape test 3', function () {
+    const regex = createRegex('\\a\\\\\\(')
+    equal('a\\(', regex?.match('a\\(xyz'))
+  })
+
+  it('escape negative', function () {
+    equal(undefined, createRegex('abc\\'))
+  })
+
+  it('unicode test', function () {
+    const regex = createRegex('a\\u4F60\\u597dz')
+    equal('a\u4f60\u597dz', regex?.match('a\u4f60\u597dzz'))
+  })
+
+  it('unicode negative', function () {
+    const regex = createRegex('\\ua7zm')
+    equal('ua7zm', regex?.match('ua7zmxyz'))
+  })
+
   it('svg debug', function () {
     createRegex('a(bc)+', true)
   })

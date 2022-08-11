@@ -1,5 +1,7 @@
 import StringBuffer from "./stringBuffer"
 import { NFA, Path, StateGenerator } from "../nfa"
+import EscapeBuilder from "./escapeBuilder"
+import RangeBuilder from "./rangeBuilder"
 
 export interface IBuilder {
     build(): NFA
@@ -22,6 +24,56 @@ export class Builder implements IBuilder {
         }
     }
 
+    private rules: { [x: string]: (nfa: NFA, last: NFA | undefined) => NFA | undefined } = {
+        '(': (nfa: NFA, last: NFA | undefined) => {
+            if (last) {
+                nfa.connect(last)
+            }
+            const paranBuilder = new Builder('')
+            paranBuilder.s = this.s
+            paranBuilder.gen = this.gen
+            paranBuilder.stopCond = (c: string) => c != ')'
+            paranBuilder.finishFunc = (last: NFA | undefined, result: NFA) => {
+                if (!this.s.finished()) {
+                    if (last) {
+                        result.connect(last)
+                    }
+                } else {
+                    throw new Error('Missing ) in regex')
+                }
+            }
+            return paranBuilder.build()
+        },
+
+        '[': (nfa: NFA, last: NFA | undefined) => {
+            if (last) {
+                nfa.connect(last)
+            }
+            return new RangeBuilder(this.s, this.gen).build()
+        },
+
+        '*': (nfa: NFA, last: NFA | undefined) => {
+            if (last) {
+                last.repeat()
+            }
+            return last
+        },
+
+        '+': (nfa: NFA, last: NFA | undefined) => {
+            if (last) {
+                last.repeatAtLeastOnce()
+            }
+            return last
+        },
+
+        '\\': (nfa: NFA, last: NFA | undefined) => {
+            if (last) {
+                nfa.connect(last)
+            }
+            return new EscapeBuilder(this.s, this.gen).build()
+        }
+    }
+
     build(): NFA {
         const start = this.gen.newState()
         const nfa = new NFA(start, [start])
@@ -29,34 +81,9 @@ export class Builder implements IBuilder {
         let lastNFA: NFA | undefined = undefined
         let c = this.s.nextChar()
         while(this.stopCond(c)) {
-            if (c == '(') {
-                if (lastNFA) {
-                    nfa.connect(lastNFA)
-                }
-                const paranBuilder = new Builder('')
-                paranBuilder.s = this.s
-                paranBuilder.gen = this.gen
-                paranBuilder.stopCond = (c: string) => c != ')'
-                paranBuilder.finishFunc = (last: NFA | undefined, result: NFA) => {
-                    if (c) {
-                        if (last) {
-                            result.connect(last)
-                        }
-                    } else {
-                        throw new Error('Missing ) in regex')
-                    }
-                }
-                lastNFA = paranBuilder.build()
-            } else if (c == '[') {
-
-            } else if (c == '*') {
-                if (lastNFA) {
-                    lastNFA.repeat()
-                }
-            } else if (c == '+') {
-                if (lastNFA) {
-                    lastNFA.repeatAtLeastOnce()
-                }
+            const func = this.rules[c]
+            if (func) {
+                lastNFA = func(nfa, lastNFA)
             } else {
                 if (lastNFA) {
                     nfa.connect(lastNFA)
@@ -68,7 +95,6 @@ export class Builder implements IBuilder {
                 state.addPath(path)
                 lastNFA = new NFA(state, [next])
             }
-
             c = this.s.nextChar()
         }
         this.finishFunc(lastNFA, nfa)

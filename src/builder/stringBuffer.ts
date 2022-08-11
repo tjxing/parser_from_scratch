@@ -14,10 +14,19 @@ export default class StringBuffer {
 
     nextCharCode(): number | undefined {
         const next = this.s.charCodeAt(this.index++)
-        return next == NaN ? next : undefined
+        return next != NaN ? next : undefined
     }
 
     skip(steps: number) {
         this.index += steps
+    }
+
+    finished(): boolean {
+        return this.index >= this.s.length
+    }
+
+    remaining(): number {
+        const result = this.s.length - this.index
+        return result < 0 ? 0 : result
     }
 }

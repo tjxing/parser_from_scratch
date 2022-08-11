@@ -41,7 +41,7 @@ export function createRegex(r: string, debug?: boolean): Regex | undefined {
         }
         return new Regex(nfa)
     } catch(e) {
-        console.warn('Failed to parse the regext', e)
+        console.warn('Failed to parse the regex', e)
     }
     return undefined
 }
