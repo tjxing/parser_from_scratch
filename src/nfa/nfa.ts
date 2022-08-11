@@ -1,5 +1,4 @@
 import State from './state'
-import StateGenerator from './stateGenerator'
 
 export default class NFA {
     readonly start: State

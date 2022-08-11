@@ -31,4 +31,8 @@ describe('Regex', function () {
     equal(undefined, regex?.match('a'))
     equal('abcbcbc', regex?.match('abcbcbcd'))
   })
+
+  it('svg debug', function () {
+    createRegex('a(bc)+', true)
+  })
 })

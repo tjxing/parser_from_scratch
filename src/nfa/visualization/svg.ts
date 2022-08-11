@@ -1,6 +1,11 @@
 import NFA from "../nfa"
 import State from "../state"
 
+/**
+ * Generate a SVG image for NFA
+ * This module is only for debugging
+ * Don't use it in production
+ */
 const STATE_DIST = 100
 const RADIUS = 25
 const [ X, Y ] = [ 30, 30 ]
