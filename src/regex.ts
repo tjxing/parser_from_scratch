@@ -1,6 +1,6 @@
-import { NFA, State, Path } from './nfa'
-import Builder from './builder'
+import { NFA } from './nfa'
 import nfaToSvg from './nfa/visualization/svg'
+import parseRegex from './parser'
 
 export class Regex {
     nfa: NFA
@@ -35,7 +35,8 @@ export class Regex {
 
 export function createRegex(r: string, debug?: boolean): Regex | undefined {
     try {
-        const nfa = new Builder(r).build()
+        // const nfa = new Builder(r).build()
+        const nfa = parseRegex(r)
         if (debug) {
             console.debug(nfaToSvg(nfa))
         }

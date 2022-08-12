@@ -33,7 +33,7 @@ export default class NFA {
         this.current = [this.start]
     }
 
-    connect(other: NFA) {
+    connect(other: NFA): NFA {
         if (other.start.inputCount() > 0) {
             this.terminals.forEach(t => {
                 t.setTerminal(false)
@@ -60,9 +60,10 @@ export default class NFA {
                 this.terminals = other.terminals
             }
         }
+        return this
     }
 
-    or(other: NFA) {
+    or(other: NFA): NFA {
         this.start.addClosure(other.start)
 
         const terminals: State[] = []
@@ -70,9 +71,11 @@ export default class NFA {
         other.terminals.forEach(t => terminals[t.id] = t)
         this.terminals = []
         terminals.forEach(t => this.terminals.push(t))
+    
+        return this
     }
 
-    repeat() {
+    repeat(): NFA {
         this.start.setTerminal(true)
         let found = false
         this.terminals.forEach(t => {
@@ -85,14 +88,17 @@ export default class NFA {
         if (!found) {
             this.terminals.push(this.start)
         }
+
+        return this
     }
 
-    repeatAtLeastOnce() {
+    repeatAtLeastOnce(): NFA {
         this.terminals.forEach(t => {
             if (t.id != this.start.id) {
                 t.addClosure(this.start)
             }
         })
+        return this
     }
 
 }

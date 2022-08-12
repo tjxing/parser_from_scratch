@@ -1,9 +1,11 @@
-import State from "./state"
+import { State } from "../nfa"
 
-export default class StateGenerator {
+class StateGenerator {
     private id:number = 0
 
     newState(): State {
         return new State(this.id++)
     }
 }
+
+export default new StateGenerator()
