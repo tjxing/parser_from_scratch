@@ -63,7 +63,7 @@ const unicodeParser: Parser = (s: Str) => {
     return undefined
 }
 
-const letterParser = not('(', ')', '[', ']', '*', '+', '\\')
+const letterParser = not('(', ')', '[', ']', '*', '+', '\\', '|')
 
 const paranParser: Parser = (s: Str) => {
     const p = connect(
@@ -78,7 +78,7 @@ const paranParser: Parser = (s: Str) => {
     return undefined
 }
 
-const termParser: Parser = or(
+const wordParser: Parser = or(
     paranParser,
     unicodeParser,
     escapeParser,
@@ -86,7 +86,7 @@ const termParser: Parser = or(
 )
 
 const starParser: Parser = (s: Str) => {
-    const p = connect(termParser, charParser('*'))
+    const p = connect(wordParser, charParser('*'))
     const next = p(s)
     if (next) {
         return [[next[0][0].repeat()], next[1]]
@@ -95,7 +95,7 @@ const starParser: Parser = (s: Str) => {
 }
 
 const plusParser: Parser = (s: Str) => {
-    const p = connect(termParser, charParser('+'))
+    const p = connect(wordParser, charParser('+'))
     const next = p(s)
     if (next) {
         return [[next[0][0].repeatAtLeastOnce()], next[1]]
@@ -103,14 +103,32 @@ const plusParser: Parser = (s: Str) => {
     return undefined
 }
 
-const wordParser: Parser = or(
+const factorParser: Parser = or(
     starParser,
     plusParser,
-    termParser
+    wordParser
+)
+
+const orParser: Parser = (s: Str) => {
+    const p = connect(
+        factorParser,
+        charParser('|'),
+        wordParser
+    )
+    const result = p(s)
+    if (result) {
+        return [[result[0][0].or(result[0][2])], result[1]]
+    }
+    return undefined
+}
+
+const termParser: Parser = or(
+    orParser,
+    factorParser
 )
 
 const expressionParser: Parser = (s: Str) => {
-    const p = repeat(wordParser)
+    const p = repeat(termParser)
     const result = p(s)
     if (result) {
         const nfa = result[0].reduce((a, b) => a.connect(b))

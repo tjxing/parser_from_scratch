@@ -32,6 +32,19 @@ describe('Regex', function () {
     equal('abcbcbc', regex?.match('abcbcbcd'))
   })
 
+  it('match regex /ab|c/', function () {
+    const regex = createRegex('ab|c')
+    equal('ab', regex?.match('abd'))
+    equal('ac', regex?.match('acd'))
+    equal(undefined, regex?.match('adef'))
+  })
+
+  it('match regex /a(b*|c)+/', function () {
+    const regex = createRegex('a(b*|c)+')
+    equal('abbbbbbcccc', regex?.match('abbbbbbccccddd'))
+    equal('accbbbcbbccb', regex?.match('accbbbcbbccbd'))
+  })
+
   it('escape test 1', function () {
     const regex = createRegex('\\b\\f\\n\\r\\t\\v')
     equal('\b\f\n\r\t\v', regex?.match('\b\f\n\r\t\v'))
@@ -65,4 +78,5 @@ describe('Regex', function () {
   it('svg debug', function () {
     createRegex('a(bc)+', true)
   })
+
 })

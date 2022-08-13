@@ -44,7 +44,7 @@ export default class NFA {
             this.terminals.forEach(t => {
                 t.setTerminal(other.start.isTerminal())
                 other.start.forEachPath(p => t.movePath(p))
-                other.start.forEachClosure(c => t.moveClosure(t))
+                other.start.forEachClosure(c => t.moveClosure(c))
             })
             
             if (other.start.isTerminal()) {
