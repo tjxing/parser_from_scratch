@@ -45,6 +45,17 @@ describe('Regex', function () {
     equal('accbbbcbbccb', regex?.match('accbbbcbbccbd'))
   })
 
+  it('match regex /a[bcm-p]*x/', function () {
+    const regex = createRegex('a[bcm-p]*x')
+    equal('abbccmmooppx', regex?.match('abbccmmooppxyz'))
+    equal(undefined, regex?.match('aex'))
+  })
+
+  it('match regex /[\uab01-\uaba0]+/', function () {
+    const regex = createRegex('[\\uab01-\\uaba0]+')
+    equal('\uab01\uab02\uab05\uaba0', regex?.match('\uab01\uab02\uab05\uaba0\uaba1'))
+  })
+
   it('escape test 1', function () {
     const regex = createRegex('\\b\\f\\n\\r\\t\\v')
     equal('\b\f\n\r\t\v', regex?.match('\b\f\n\r\t\v'))

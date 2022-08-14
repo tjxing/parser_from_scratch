@@ -42,9 +42,9 @@ class StateItem {
 class PathItem {
     from: StateItem
     to: StateItem
-    char: number | undefined
+    char: string | undefined
 
-    constructor(from: StateItem, to: StateItem, char: number | undefined) {
+    constructor(from: StateItem, to: StateItem, char: string | undefined) {
         this.from = from
         this.to = to
         this.char = char
@@ -151,7 +151,7 @@ function handleState(state: State, svg: SVG, next: State[]): StateItem {
 
         state.forEachPath(p => {
             svg.paths.push(new PathItem(result, 
-                handleState(p.dest, svg, next), p.char))
+                handleState(p.dest, svg, next), p.char()))
             next.push(p.dest)
         })
         state.forEachClosure(c => {

@@ -1,20 +1,20 @@
 import { NFA } from "../nfa"
-import { Parser, charParser, connect, or, repeat, createSimpleNFA, rangeParser, repeatN, escape, not, any } from "./base"
+import { Parser, char, connect, or, repeat, createSimpleNFA, range, repeatN, escape, not, any, NumParser, orNum, num, connectNum, escapeNum, anyNum, notNum, createRangeNFA } from "./base"
 import Str from "./str"
 
 
-const escapeParser: Parser = (s: Str) => {
-    const p = connect(
-        charParser('\\'), 
-        or(
-            escape('b'), 
-            escape('f'), 
-            escape('n'), 
-            escape('r'), 
-            escape('t'), 
-            escape('v'), 
-            escape('0'),
-            any()
+const escapeNumParser: NumParser = (s: Str) => {
+    const p = connectNum(
+        num('\\'.charCodeAt(0)), 
+        orNum(
+            escapeNum('b'), 
+            escapeNum('f'), 
+            escapeNum('n'), 
+            escapeNum('r'), 
+            escapeNum('t'), 
+            escapeNum('v'), 
+            escapeNum('0'),
+            anyNum()
         )
     )
     const next = p(s)
@@ -24,10 +24,18 @@ const escapeParser: Parser = (s: Str) => {
     return undefined
 }
 
-const hexParser: Parser = or(
-    rangeParser(97, 102), // a-f
-    rangeParser(65, 70), // A-F
-    rangeParser(48, 57) // A-F
+const escapeParser: Parser = (s: Str) => {
+    const result = escapeNumParser(s)
+    if (result) {
+        return [[createSimpleNFA(result[0][0])], result[1]]
+    }
+    return undefined
+}
+
+const hexParser: NumParser = orNum(
+    range(97, 102), // a-f
+    range(65, 70), // A-F
+    range(48, 57) // 0-9
 )
 
 function hex(c: number): number {
@@ -43,22 +51,27 @@ function hex(c: number): number {
     return -1
 }
 
-const unicodeParser: Parser = (s: Str) => {
-    const p = connect(
-        charParser('\\'),
-        charParser('u'),
+const unicodeNumParser: NumParser = (s: Str) => {
+    const p = connectNum(
+        num('\\'.charCodeAt(0)),
+        num('u'.charCodeAt(0)),
         repeatN(hexParser, 4)
     )
     const next = p(s)
     if (next) {
-        let str = s.skip(2)
         let num = 0
-        for (let i = 0; i < 4; ++i) {
-            const [c, ss] = str.nextCharCode()
-            num = 16 * num + hex(c)
-            str = ss
+        for (let i = 2; i < 6; ++i) {
+            num = 16 * num + hex(next[0][i])
         }
-        return [[createSimpleNFA(num)], str]
+        return [[num], next[1]]
+    }
+    return undefined
+}
+
+const unicodeParser: Parser = (s: Str) => {
+    const next = unicodeNumParser(s)
+    if (next) {
+        return [[createSimpleNFA(next[0][0])], next[1]]
     }
     return undefined
 }
@@ -67,9 +80,9 @@ const letterParser = not('(', ')', '[', ']', '*', '+', '\\', '|')
 
 const paranParser: Parser = (s: Str) => {
     const p = connect(
-        charParser('('),
+        char('('),
         expressionParser,
-        charParser(')')
+        char(')')
     )
     const result = p(s)
     if (result) {
@@ -78,15 +91,69 @@ const paranParser: Parser = (s: Str) => {
     return undefined
 }
 
+const rangeNumParser: NumParser = orNum(
+    unicodeNumParser,
+    escapeNumParser,
+    notNum(']')
+)
+
+const rangeLetterParser: Parser = (s: Str) => {
+    const result = rangeNumParser(s)
+    if (result) {
+        return [[createSimpleNFA(result[0][0])], result[1]]
+    }
+    return undefined
+}
+
+const rangeParser: Parser = (s: Str) => {
+    const p = connectNum(
+        rangeNumParser,
+        num('-'.charCodeAt(0)),
+        rangeNumParser
+    )
+    const result = p(s)
+    if (result) {
+        const x = result[0][0]
+        const y = result[0][2]
+        if (x > y) {
+            throw new Error('Invalid range at ' + s.index)
+        }
+        return [[createRangeNFA(x, y)], result[1]]
+    }
+    return undefined
+}
+
+const bracketParser: Parser = (s: Str) => {
+    const p = connect(
+        char('['),
+        repeat(or(
+            rangeParser,
+            rangeLetterParser
+        )),
+        char(']')
+    )
+    const result = p(s)
+    if (result && result[0].length > 2) {
+        let nfa = result[0][1]
+        for (let i = 2; i < result[0].length - 1; ++i) {
+            nfa = nfa.or(result[0][i])
+        }
+        return [[nfa], result[1]]
+    }
+    return undefined
+}
+
+
 const wordParser: Parser = or(
     paranParser,
+    bracketParser,
     unicodeParser,
     escapeParser,
     letterParser
 )
 
 const starParser: Parser = (s: Str) => {
-    const p = connect(wordParser, charParser('*'))
+    const p = connect(wordParser, char('*'))
     const next = p(s)
     if (next) {
         return [[next[0][0].repeat()], next[1]]
@@ -95,7 +162,7 @@ const starParser: Parser = (s: Str) => {
 }
 
 const plusParser: Parser = (s: Str) => {
-    const p = connect(wordParser, charParser('+'))
+    const p = connect(wordParser, char('+'))
     const next = p(s)
     if (next) {
         return [[next[0][0].repeatAtLeastOnce()], next[1]]
@@ -112,7 +179,7 @@ const factorParser: Parser = or(
 const orParser: Parser = (s: Str) => {
     const p = connect(
         factorParser,
-        charParser('|'),
+        char('|'),
         wordParser
     )
     const result = p(s)
