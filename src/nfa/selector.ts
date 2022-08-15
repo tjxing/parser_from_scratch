@@ -41,3 +41,54 @@ export class RangeSelector implements Selector {
         return String.fromCharCode(this.x) + '-' + String.fromCharCode(this.y)
     }
 }
+
+export class blankSelector implements Selector {
+    apply(c: number): boolean {
+        return c == 12 // \f
+            || c == 10 // \n
+            || c == 13 // \r
+            || c == 9  // \t
+            || c == 11 // \v
+    }
+
+    toString(): string {
+        return '\s'
+    }
+}
+
+export class nonBlankSelector implements Selector {
+    apply(c: number): boolean {
+        return c != 12 // \f
+            && c != 10 // \n
+            && c != 13 // \r
+            && c != 9  // \t
+            && c != 11 // \v
+    }
+
+    toString(): string {
+        return '\S'
+    }
+}
+
+export class wSelector implements Selector {
+    apply(c: number): boolean {
+        return (c >= 49 && c <= 57)  // 0-9
+            || (c >= 65 && c <= 90)  // A-Z
+            || (c >= 97 && c <= 122) // a-z
+    }
+
+    toString(): string {
+        return '.'
+    }
+}
+
+export class anySelector implements Selector {
+    apply(c: number): boolean {
+        return c != 10  // \n
+            && c != 13  // \r
+    }
+
+    toString(): string {
+        return '\w'
+    }
+}

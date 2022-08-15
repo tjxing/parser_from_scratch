@@ -32,6 +32,13 @@ describe('Regex', function () {
     equal('abcbcbc', regex?.match('abcbcbcd'))
   })
 
+  it('match regex /a(bc)?d/', function () {
+    const regex = createRegex('a(bc)?d')
+    equal('ad', regex?.match('adef'))
+    equal('abcd', regex?.match('abcdef'))
+    equal(undefined, regex?.match('abcbcdef'))
+  })
+
   it('match regex /ab|c/', function () {
     const regex = createRegex('ab|c')
     equal('ab', regex?.match('abd'))
@@ -49,6 +56,11 @@ describe('Regex', function () {
     const regex = createRegex('a[bcm-p]*x')
     equal('abbccmmooppx', regex?.match('abbccmmooppxyz'))
     equal(undefined, regex?.match('aex'))
+  })
+
+  it('match regex /\s*\S*\w*.*/', function () {
+    const regex = createRegex('\\s*\\S*\\w*.*')
+    equal('\n\taaffrryy3568', regex?.match('\n\taaffrryy3568'))
   })
 
   it('match regex /[\uab01-\uaba0]+/', function () {

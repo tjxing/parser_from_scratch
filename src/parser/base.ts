@@ -5,7 +5,7 @@ import Str from "./str";
 export type Parser = (s: Str) => [nfa: NFA[], s: Str] | undefined
 export type NumParser = (s: Str) => [num: number[], s: Str] | undefined
 
-export function createSimpleNFA(c: number): NFA {
+export function createSimpleNFA(c: number | 's' | 'S' | 'w' | '.'): NFA {
     const start = generator.newState()
     start.setTerminal(false)
     const terminal = generator.newState()

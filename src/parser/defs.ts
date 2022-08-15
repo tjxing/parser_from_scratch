@@ -143,12 +143,60 @@ const bracketParser: Parser = (s: Str) => {
     return undefined
 }
 
+const blankParser: Parser = (s: Str) => {
+    const p = connect(
+        char('\\'),
+        char('s')
+    )
+    const result = p(s)
+    if (result) {
+        return [[createSimpleNFA('s')], result[1]]
+    }
+    return undefined
+}
+
+const nonBlankParser: Parser = (s: Str) => {
+    const p = connect(
+        char('\\'),
+        char('S')
+    )
+    const result = p(s)
+    if (result) {
+        return [[createSimpleNFA('S')], result[1]]
+    }
+    return undefined
+}
+
+const wParser: Parser = (s: Str) => {
+    const p = connect(
+        char('\\'),
+        char('w')
+    )
+    const result = p(s)
+    if (result) {
+        return [[createSimpleNFA('w')], result[1]]
+    }
+    return undefined
+}
+
+const anyParser: Parser = (s: Str) => {
+    const p = char('.')
+    const result = p(s)
+    if (result) {
+        return [[createSimpleNFA('.')], result[1]]
+    }
+    return undefined
+}
 
 const wordParser: Parser = or(
     paranParser,
     bracketParser,
     unicodeParser,
+    blankParser,
+    nonBlankParser,
+    wParser,
     escapeParser,
+    anyParser,
     letterParser
 )
 
@@ -170,9 +218,19 @@ const plusParser: Parser = (s: Str) => {
     return undefined
 }
 
+const questionParser: Parser = (s: Str) => {
+    const p = connect(wordParser, char('?'))
+    const next = p(s)
+    if (next) {
+        return [[next[0][0].repeatAtMostOnce()], next[1]]
+    }
+    return undefined
+}
+
 const factorParser: Parser = or(
     starParser,
     plusParser,
+    questionParser,
     wordParser
 )
 

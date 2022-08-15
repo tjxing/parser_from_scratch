@@ -101,4 +101,12 @@ export default class NFA {
         return this
     }
 
+    repeatAtMostOnce(): NFA {
+        this.start.setTerminal(true)
+        if (this.terminals.find(t => t.id == this.start.id) == undefined) {
+            this.terminals.push(this.start)
+        }
+        return this
+    }
+
 }
