@@ -1,4 +1,4 @@
-import { NFA, Path } from "../nfa";
+import { NFA, Path, notPath } from "../nfa";
 import generator from './state_gen'
 import Str from "./str";
 
@@ -19,6 +19,15 @@ export function createRangeNFA(x: number, y: number): NFA {
     start.setTerminal(false)
     const terminal = generator.newState()
     const path = new Path(terminal, x, y)
+    start.addPath(path)
+    return new NFA(start, [terminal])
+}
+
+export function createNotNFA(paths: Path[]): NFA {
+    const start = generator.newState()
+    start.setTerminal(false)
+    const terminal = generator.newState()
+    const path = notPath(terminal, paths)
     start.addPath(path)
     return new NFA(start, [terminal])
 }

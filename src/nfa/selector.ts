@@ -92,3 +92,29 @@ export class anySelector implements Selector {
         return '\w'
     }
 }
+
+export class NotSelector implements Selector {
+    private selectors: Selector[]
+
+    constructor(selectors: Selector[]) {
+        this.selectors = selectors
+    }
+
+    apply(c: number): boolean {
+        for (let i in this.selectors) {
+            if (this.selectors[i].apply(c)) {
+                return false
+            }
+        }
+        return true
+    }
+
+    toString(): string {
+        let s: string = ''
+        for (let i in this.selectors) {
+            s += this.selectors[i].toString()
+        }
+        return '[^' + s + ']'
+    }
+    
+}
