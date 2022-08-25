@@ -27,15 +27,13 @@ class StateItem {
     toString(i: number): string {
         this.x = X + i * STATE_DIST
         const fill = this.terminal ? 'yellow' : 'white'
-        let result = 
-            `<g>` +
+        return `<g>` +
                 `<path id="text-path-${this.id}" d="M${this.x - RADIUS},${Y},${this.x + RADIUS},${Y}"/>` +
                 `<circle cx="${this.x}" cy="${Y}" r="${RADIUS}" stroke="blue" fill="${fill}"/>` +
                 `<text style="font-size:16;stroke:red;text-anchor:middle;dominant-baseline:middle">` + 
                     `<textPath xlink:href="#text-path-${this.id}" startOffset="50%">${this.id}</textPath>` + 
                 `</text>` +
             `</g>`
-        return result
     }
 }
 

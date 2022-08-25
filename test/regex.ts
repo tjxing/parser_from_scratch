@@ -58,7 +58,7 @@ describe('Regex', function () {
     equal(undefined, regex?.match('aex'))
   })
 
-  it('match regex /\s*\S*\w*.*/', function () {
+  it('match regex /\\s*\\S*\\w*.*/', function () {
     const regex = createRegex('\\s*\\S*\\w*.*')
     equal('\n\taaffrryy3568', regex?.match('\n\taaffrryy3568'))
   })
@@ -68,7 +68,7 @@ describe('Regex', function () {
     equal('def0123', regex?.match('def0123a'))
   })
 
-  it('match regex /[\uab01-\uaba0]+/', function () {
+  it('match regex /[\\uab01-\\uaba0]+/', function () {
     const regex = createRegex('[\\uab01-\\uaba0]+')
     equal('\uab01\uab02\uab05\uaba0', regex?.match('\uab01\uab02\uab05\uaba0\uaba1'))
   })

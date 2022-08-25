@@ -37,7 +37,7 @@ export default class Path {
 }
 
 export function notPath(state: State, paths: Path[]): Path {
-    let selectors: Selector[] = []
+    const selectors: Selector[] = []
     paths.forEach(p => selectors.push(p.selector))
     const selector = new NotSelector(selectors)
     return new Path(state, selector)

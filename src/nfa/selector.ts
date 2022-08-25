@@ -52,7 +52,7 @@ export class blankSelector implements Selector {
     }
 
     toString(): string {
-        return '\s'
+        return '\\s'
     }
 }
 
@@ -66,7 +66,7 @@ export class nonBlankSelector implements Selector {
     }
 
     toString(): string {
-        return '\S'
+        return '\\S'
     }
 }
 
@@ -89,7 +89,7 @@ export class anySelector implements Selector {
     }
 
     toString(): string {
-        return '\w'
+        return '\\w'
     }
 }
 
@@ -101,7 +101,7 @@ export class NotSelector implements Selector {
     }
 
     apply(c: number): boolean {
-        for (let i in this.selectors) {
+        for (const i in this.selectors) {
             if (this.selectors[i].apply(c)) {
                 return false
             }
@@ -110,8 +110,8 @@ export class NotSelector implements Selector {
     }
 
     toString(): string {
-        let s: string = ''
-        for (let i in this.selectors) {
+        let s = ''
+        for (const i in this.selectors) {
             s += this.selectors[i].toString()
         }
         return '[^' + s + ']'

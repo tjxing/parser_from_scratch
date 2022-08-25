@@ -91,7 +91,7 @@ export function connectNum(a: NumParser, ...b: NumParser[]): NumParser {
     return (s: Str) => {
         let result = a(s)
         if (result) {
-            for (let i in b) {
+            for (const i in b) {
                 const r = b[i](result[1])
                 if (r) {
                     r[0].forEach(n => result[0].push(n))
@@ -109,7 +109,7 @@ export function connect(a: Parser, ...b: Parser[]): Parser {
     return (s: Str) => {
         let result = a(s)
         if (result) {
-            for (let i in b) {
+            for (const i in b) {
                 const r = b[i](result[1])
                 if (r) {
                     r[0].forEach(n => result[0].push(n))
@@ -127,7 +127,7 @@ export function orNum(a: NumParser, ...b: NumParser[]): NumParser {
     return (s: Str) => {
         const result = a(s)
         if (result == undefined) {
-            for (let i in b) {
+            for (const i in b) {
                 const r = b[i](s)
                 if (r) {
                     return r
@@ -143,7 +143,7 @@ export function or(a: Parser, ...b: Parser[]): Parser {
     return (s: Str) => {
         const result = a(s)
         if (result == undefined) {
-            for (let i in b) {
+            for (const i in b) {
                 const r = b[i](s)
                 if (r) {
                     return r
@@ -157,8 +157,7 @@ export function or(a: Parser, ...b: Parser[]): Parser {
 
 export function repeat(a: Parser): Parser {
     return (s: Str) => {
-        let result = a
-        let nfa: NFA[] = []
+        const nfa: NFA[] = []
         let str = s
         let next = a(s)
         while(next) {

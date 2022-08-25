@@ -1,5 +1,5 @@
 import { NFA, Path } from "../nfa"
-import { Parser, char, connect, or, repeat, createSimpleNFA, range, repeatN, escape, not, any, NumParser, orNum, num, connectNum, escapeNum, anyNum, notNum, createRangeNFA, createNotNFA } from "./base"
+import { Parser, char, connect, or, repeat, createSimpleNFA, range, repeatN, not, NumParser, orNum, num, connectNum, escapeNum, anyNum, notNum, createRangeNFA, createNotNFA } from "./base"
 import Str from "./str"
 
 
@@ -135,7 +135,7 @@ const notParser: Parser = (s: Str) => {
     )
     const result = p(s)
     if (result && result[0].length > 3) {
-        let paths: Path[] = []
+        const paths: Path[] = []
         for (let i = 2; i < result[0].length - 1; ++i) {
             result[0][i].start.forEachPath(p => paths.push(p))
         }

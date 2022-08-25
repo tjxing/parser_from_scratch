@@ -21,7 +21,7 @@ export default class NFA {
     }
 
     accepted(): boolean {
-        for (let i in this.current) {
+        for (const i in this.current) {
             if (this.current[i].isTerminal()) {
                 return true
             }
@@ -48,7 +48,7 @@ export default class NFA {
             })
             
             if (other.start.isTerminal()) {
-                let terminals: State[] = []
+                const terminals: State[] = []
                 other.terminals.forEach(t => {
                     if (t.id != other.start.id) {
                         terminals.push(t)
