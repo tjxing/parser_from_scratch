@@ -1,4 +1,4 @@
-import { NFA, Path, notPath } from "../nfa";
+import { MergedNFA, NFA, Path } from "../nfa";
 import generator from './state_gen'
 import Str from "./str";
 
@@ -23,13 +23,12 @@ export function createRangeNFA(x: number, y: number): NFA {
     return new NFA(start, [terminal])
 }
 
-export function createNotNFA(paths: Path[]): NFA {
-    const start = generator.newState()
-    start.setTerminal(false)
-    const terminal = generator.newState()
-    const path = notPath(terminal, paths)
-    start.addPath(path)
-    return new NFA(start, [terminal])
+export function createMergedNFA(nfa: NFA[]): MergedNFA {
+    return new MergedNFA(
+        nfa,
+        generator.newState(),
+        generator.newState()
+    )
 }
 
 export function num(c: number): NumParser {

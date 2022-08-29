@@ -2,7 +2,7 @@ import State from './state'
 
 export default class NFA {
     readonly start: State
-    private terminals: State[]
+    protected terminals: State[]
     private current: State[]
 
     constructor(start: State, terminals: State[]) {
@@ -108,5 +108,4 @@ export default class NFA {
         }
         return this
     }
-
 }

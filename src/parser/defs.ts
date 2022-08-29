@@ -1,5 +1,5 @@
-import { NFA, Path } from "../nfa"
-import { Parser, char, connect, or, repeat, createSimpleNFA, range, repeatN, not, NumParser, orNum, num, connectNum, escapeNum, anyNum, notNum, createRangeNFA, createNotNFA } from "./base"
+import { NFA } from "../nfa"
+import { Parser, char, connect, or, repeat, createSimpleNFA, range, repeatN, not, NumParser, orNum, num, connectNum, escapeNum, anyNum, notNum, createRangeNFA, createMergedNFA } from "./base"
 import Str from "./str"
 
 
@@ -135,11 +135,8 @@ const notParser: Parser = (s: Str) => {
     )
     const result = p(s)
     if (result && result[0].length > 3) {
-        const paths: Path[] = []
-        for (let i = 2; i < result[0].length - 1; ++i) {
-            result[0][i].start.forEachPath(p => paths.push(p))
-        }
-        return [[createNotNFA(paths)], result[1]]
+        const nfa = createMergedNFA(result[0].slice(2, result[0].length - 1)).not()
+        return [[nfa], result[1]]
     }
     return undefined
 }
@@ -155,10 +152,7 @@ const bracketParser: Parser = (s: Str) => {
     )
     const result = p(s)
     if (result && result[0].length > 2) {
-        let nfa = result[0][1]
-        for (let i = 2; i < result[0].length - 1; ++i) {
-            nfa = nfa.or(result[0][i])
-        }
+        const nfa = createMergedNFA(result[0].slice(1, result[0].length - 1))
         return [[nfa], result[1]]
     }
     return undefined

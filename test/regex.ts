@@ -58,6 +58,12 @@ describe('Regex', function () {
     equal(undefined, regex?.match('aex'))
   })
 
+  it('match regex /[a-fb-ec-h]/', function () {
+    const regex = createRegex('[a-fb-ec-h]')
+    equal('d', regex?.match('d'))
+    equal(undefined, regex?.match('i'))
+  })
+
   it('match regex /\\s*\\S*\\w*.*/', function () {
     const regex = createRegex('\\s*\\S*\\w*.*')
     equal('\n\taaffrryy3568', regex?.match('\n\taaffrryy3568'))
