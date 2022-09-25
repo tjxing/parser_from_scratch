@@ -1,5 +1,5 @@
 import State from '../state'
-import { AnySelector, BlankSelector, CharSelector, LetterSelector, NonBlankSelector, RangeSelector, Selector } from './selector'
+import { AnySelector, BlankSelector, CharSelector, LetterSelector, NonBlankSelector, RangeSelector, Selector } from '../../selector'
 
 export default class Path {
     readonly selector: Selector

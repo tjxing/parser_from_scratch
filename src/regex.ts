@@ -1,22 +1,22 @@
-import { NFA } from './nfa'
+import Automata from './automata'
 import nfaToSvg from './nfa/visualization/svg'
 import parseRegex from './parser'
 
 export class Regex {
-    nfa: NFA
+    automata: Automata
 
-    constructor(nfa: NFA) {
-        this.nfa = nfa
+    constructor(automata: Automata) {
+        this.automata = automata
     }
 
     match(s: string): string | undefined {
-        let lastAccepted = this.nfa.accepted() ? 0 : -1
+        let lastAccepted = this.automata.accepted() ? 0 : -1
         for (let i = 0; i < s.length; ++i) {
-            const result = this.nfa.consume(s.charCodeAt(i))
+            const result = this.automata.consume(s.charCodeAt(i))
             if (!result) {
                 return this.matchResult(lastAccepted, s)
             } else {
-                if (this.nfa.accepted()) {
+                if (this.automata.accepted()) {
                     lastAccepted = i + 1
                 }
             }
@@ -25,7 +25,7 @@ export class Regex {
     }
 
     private matchResult(lastAccepted: number, s: string): string | undefined {
-        this.nfa.reset()
+        this.automata.reset()
         if (lastAccepted >= 0) {
             return s.substring(0, lastAccepted)
         }

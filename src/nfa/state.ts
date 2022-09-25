@@ -1,4 +1,4 @@
-import Path from "./path/path";
+import { Path } from "./path";
 
 export default class State {
     readonly id: number

@@ -1,6 +1,7 @@
 import State from './state'
+import Automata from '../automata'
 
-export default class NFA {
+export default class NFA implements Automata {
     readonly start: State
     protected terminals: State[]
     private current: State[]
