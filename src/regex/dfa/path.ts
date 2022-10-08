@@ -1,14 +1,13 @@
 import { Selector } from '../selector'
 import State from './state'
-import { Path as NFAPath } from '../nfa'
 
 export class Path {
     readonly selector: Selector
     readonly dest: State
 
-    constructor(nfaPath: NFAPath) {
-        this.selector = nfaPath.selector
-        this.dest = new State(nfaPath.dest)
+    constructor(selector: Selector, dest: State) {
+        this.selector = selector
+        this.dest = dest
     }
 
     go(c: number): State | undefined {
